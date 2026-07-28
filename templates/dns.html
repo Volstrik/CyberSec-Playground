@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}DNS Lookup — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 04</p>
+          <h1 class="tool-page-title">DNS Lookup</h1>
+          <p class="tool-page-desc">
+            Query A, MX, TXT, and NS records for any domain name.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="domain">Domain</label>
+            <input
+              class="csp-input"
+              type="text"
+              id="domain"
+              name="domain"
+              placeholder="e.g. github.com"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Run Lookup <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+
+          {% if result.error %}
+          <div class="csp-panel error-panel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ result.error }}
+          </div>
+
+          {% else %}
+          <div class="result-panel">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">DNS Records — {{ result.domain }}</span>
+            </div>
+
+            <div class="result-body">
+              {% for rtype, records in result.records.items() %}
+              <div class="dns-block">
+
+                <div class="dns-type-label">{{ rtype }}</div>
+
+                {% for record in records %}
+                <div class="dns-record">
+                  <i class="bi bi-chevron-right dns-chevron"></i>
+                  <span>{{ record }}</span>
+                </div>
+                {% endfor %}
+
+              </div>
+              {% endfor %}
+            </div>
+
+          </div>
+          {% endif %}
+
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Security Headers — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 06</p>
+          <h1 class="tool-page-title">Security Headers</h1>
+          <p class="tool-page-desc">
+            Check whether a website implements key HTTP security headers correctly.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="url">Website URL</label>
+            <input
+              class="csp-input"
+              type="text"
+              id="url"
+              name="url"
+              placeholder="e.g. https://github.com"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Check Headers <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+
+          {% if result.error %}
+          <div class="csp-panel error-panel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ result.error }}
+          </div>
+
+          {% else %}
+
+          <!-- Grade block -->
+          <div class="grade-block">
+            <div class="grade-circle grade-{{ result.color }}">
+              {{ result.grade }}
+            </div>
+            <div class="grade-meta">
+              <div class="grade-url">{{ result.url }}</div>
+              <div class="grade-score">
+                {{ result.present_count }} of {{ result.total }} headers present
+                &nbsp;·&nbsp; Score: {{ result.score }}/100
+                &nbsp;·&nbsp; HTTP {{ result.status_code }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Headers list -->
+          <div class="result-panel">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">Header Analysis</span>
+            </div>
+            <div class="result-body p-0">
+
+              {% for h in result.results %}
+              <div class="header-row {% if h.present %}header-present{% else %}header-missing{% endif %}">
+                <div class="header-top">
+                  <div class="header-name">{{ h.name }}</div>
+                  {% if h.present %}
+                    <span class="badge-ok">present</span>
+                  {% else %}
+                    <span class="badge-danger">missing</span>
+                  {% endif %}
+                </div>
+                {% if h.present and h.value %}
+                <div class="header-value">{{ h.value }}</div>
+                {% endif %}
+                <div class="header-desc">{{ h.desc }}</div>
+                {% if not h.present %}
+                <div class="header-risk">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ h.risk }}
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+
+            </div>
+          </div>
+
+          {% endif %}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

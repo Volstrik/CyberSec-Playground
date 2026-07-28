@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}CyberSec Playground — Security Tools{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="csp-hero">
+  <div class="container">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Open-source security toolkit</p>
+      <h1 class="hero-headline">
+        Understand what's<br />
+        <span class="headline-accent">hiding in plain sight.</span>
+      </h1>
+      <p class="hero-sub">
+        Eight tools. No accounts. No tracking.<br />
+        Paste a URL, domain, or password — get answers instantly.
+      </p>
+      <a href="/password" class="btn csp-btn-primary">
+        Start with Password Check <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Tool Grid ─────────────────────────────────────────────────────────── -->
+<section class="csp-tools">
+  <div class="container">
+    <h2 class="section-label">All tools</h2>
+
+    <div class="tools-grid">
+
+      <a href="/password" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-key-fill"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">Password Analyzer</h3>
+          <p class="tool-desc">Detect weaknesses, estimate crack time, get actionable fixes.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/url" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-link-45deg"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">URL Reputation</h3>
+          <p class="tool-desc">Spot suspicious patterns before you click.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/whois" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-globe2"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">WHOIS Lookup</h3>
+          <p class="tool-desc">Domain registration, registrar, expiry, and contact data.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/dns" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">DNS Lookup</h3>
+          <p class="tool-desc">Query A, MX, TXT, and NS records for any domain.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/scanner" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-radar"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">Port Scanner</h3>
+          <p class="tool-desc">See which common ports are open on a target host.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/hash" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-hash"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">Hash Generator</h3>
+          <p class="tool-desc">MD5, SHA-1, SHA-256, SHA-512 — all at once.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/ssl" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-patch-check-fill"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">SSL Checker</h3>
+          <p class="tool-desc">Certificate validity, issuer, and days until expiry.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+      <a href="/headers" class="tool-card">
+        <div class="tool-icon"><i class="bi bi-shield-check"></i></div>
+        <div class="tool-body">
+          <h3 class="tool-name">Security Headers</h3>
+          <p class="tool-desc">Check HSTS, CSP, X-Frame-Options, and more.</p>
+        </div>
+        <i class="bi bi-arrow-right tool-arrow"></i>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

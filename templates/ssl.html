@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}SSL Checker — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 07</p>
+          <h1 class="tool-page-title">SSL Certificate Checker</h1>
+          <p class="tool-page-desc">
+            Verify certificate validity, expiry date, issuer, and TLS protocol for any domain.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="domain">Domain</label>
+            <input
+              class="csp-input"
+              type="text"
+              id="domain"
+              name="domain"
+              placeholder="e.g. github.com"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Check Certificate <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+
+          {% if result.error %}
+          <div class="csp-panel error-panel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ result.error }}
+          </div>
+
+          {% else %}
+
+          <!-- Status banner -->
+          <div class="ssl-banner ssl-banner-{{ result.color }}">
+            <div class="ssl-banner-icon">
+              {% if result.color == "ok" %}
+                <i class="bi bi-patch-check-fill"></i>
+              {% elif result.color == "warn" %}
+                <i class="bi bi-exclamation-triangle-fill"></i>
+              {% else %}
+                <i class="bi bi-x-circle-fill"></i>
+              {% endif %}
+            </div>
+            <div class="ssl-banner-body">
+              <div class="ssl-banner-status">{{ result.status }}</div>
+              <div class="ssl-banner-detail">
+                {% if result.days_left > 0 %}
+                  Expires in {{ result.days_left }} days &nbsp;·&nbsp; {{ result.not_after }}
+                {% else %}
+                  Expired on {{ result.not_after }}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificate details -->
+          <div class="result-panel">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">Certificate Details</span>
+            </div>
+            <div class="result-body">
+
+              <div class="result-row">
+                <span class="result-key">common name</span>
+                <span class="result-val">{{ result.common_name }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">organisation</span>
+                <span class="result-val">{{ result.org }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">issued by</span>
+                <span class="result-val">{{ result.issuer_cn }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">issuer org</span>
+                <span class="result-val">{{ result.issuer_org }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">valid from</span>
+                <span class="result-val">{{ result.not_before }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">valid until</span>
+                <span class="result-val">{{ result.not_after }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">protocol</span>
+                <span class="result-val">{{ result.protocol }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">cipher suite</span>
+                <span class="result-val">{{ result.cipher }}</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SANs -->
+          {% if result.sans %}
+          <div class="result-panel mt-3">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">Subject Alt Names ({{ result.sans | length }})</span>
+            </div>
+            <div class="result-body">
+              {% for san in result.sans %}
+              <div class="san-row">
+                <i class="bi bi-chevron-right dns-chevron"></i>
+                <span>{{ san }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% endif %}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

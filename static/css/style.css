@@ -814,3 +814,63 @@ textarea.csp-input {
   color: #ef4444;
   margin-top: 0.3rem;
 }
+/* ── SSL Checker ────────────────────────────────────────────────────────── */
+.ssl-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.4rem;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+  margin-bottom: 1.25rem;
+}
+
+.ssl-banner-ok {
+  background: rgba(16,185,129,0.07);
+  border-color: rgba(16,185,129,0.25);
+}
+
+.ssl-banner-warn {
+  background: rgba(245,158,11,0.07);
+  border-color: rgba(245,158,11,0.25);
+}
+
+.ssl-banner-danger {
+  background: rgba(239,68,68,0.07);
+  border-color: rgba(239,68,68,0.25);
+}
+
+.ssl-banner-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.ssl-banner-ok   .ssl-banner-icon { color: #10b981; }
+.ssl-banner-warn .ssl-banner-icon { color: var(--amber); }
+.ssl-banner-danger .ssl-banner-icon { color: #ef4444; }
+
+.ssl-banner-status {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.ssl-banner-detail {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.san-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.san-row:last-child { border-bottom: none; }

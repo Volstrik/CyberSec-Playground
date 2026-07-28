@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Hash Generator — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 02</p>
+          <h1 class="tool-page-title">Hash Generator</h1>
+          <p class="tool-page-desc">
+            Generate MD5, SHA-1, SHA-256, and SHA-512 hashes from any text input.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="text">Input Text</label>
+            <textarea
+              class="csp-input"
+              id="text"
+              name="text"
+              rows="4"
+              placeholder="Enter text to hash..."
+              required
+            >{% if result %}{{ result.input }}{% endif %}</textarea>
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Generate Hashes <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+        <div class="result-panel">
+
+          <div class="result-header">
+            <div class="result-header-dot"></div>
+            <span class="result-header-label">Hashes</span>
+          </div>
+
+          <div class="result-body">
+
+            <div class="hash-row">
+              <div class="hash-algo">MD5</div>
+              <div class="hash-value" id="val-md5">{{ result.md5 }}</div>
+              <button class="hash-copy" onclick="copyHash('val-md5', this)" title="Copy">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+
+            <div class="hash-row">
+              <div class="hash-algo">SHA-1</div>
+              <div class="hash-value" id="val-sha1">{{ result.sha1 }}</div>
+              <button class="hash-copy" onclick="copyHash('val-sha1', this)" title="Copy">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+
+            <div class="hash-row">
+              <div class="hash-algo">SHA-256</div>
+              <div class="hash-value" id="val-sha256">{{ result.sha256 }}</div>
+              <button class="hash-copy" onclick="copyHash('val-sha256', this)" title="Copy">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+
+            <div class="hash-row">
+              <div class="hash-algo">SHA-512</div>
+              <div class="hash-value" id="val-sha512">{{ result.sha512 }}</div>
+              <button class="hash-copy" onclick="copyHash('val-sha512', this)" title="Copy">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function copyHash(id, btn) {
+    const text = document.getElementById(id).textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const icon = btn.querySelector('i');
+      icon.className = 'bi bi-clipboard-check';
+      btn.style.color = 'var(--amber)';
+      setTimeout(() => {
+        icon.className = 'bi bi-clipboard';
+        btn.style.color = '';
+      }, 1500);
+    });
+  }
+</script>
+{% endblock %}

@@ -583,3 +583,10 @@ textarea.csp-input {
   min-height: 100px;
   font-family: var(--font-mono);
 }
+/* ── Error Panel ────────────────────────────────────────────────────────── */
+.error-panel {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}

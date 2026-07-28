@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}WHOIS Lookup — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 03</p>
+          <h1 class="tool-page-title">WHOIS Lookup</h1>
+          <p class="tool-page-desc">
+            Retrieve registration details, registrar info, and expiry dates for any domain.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="domain">Domain</label>
+            <input
+              class="csp-input"
+              type="text"
+              id="domain"
+              name="domain"
+              placeholder="e.g. google.com"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Run Lookup <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+
+          {% if result.error %}
+          <div class="csp-panel error-panel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ result.error }}
+          </div>
+
+          {% else %}
+          <div class="result-panel">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">WHOIS — {{ result.domain }}</span>
+            </div>
+            <div class="result-body">
+
+              <div class="result-row">
+                <span class="result-key">domain</span>
+                <span class="result-val">{{ result.domain }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">registrar</span>
+                <span class="result-val">{{ result.registrar }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">created</span>
+                <span class="result-val">{{ result.created }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">expires</span>
+                <span class="result-val">{{ result.expires }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">last updated</span>
+                <span class="result-val">{{ result.updated }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">status</span>
+                <span class="result-val">{{ result.status }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">name servers</span>
+                <span class="result-val">{{ result.name_servers }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">emails</span>
+                <span class="result-val">{{ result.emails }}</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">country</span>
+                <span class="result-val">{{ result.country }}</span>
+              </div>
+
+            </div>
+          </div>
+          {% endif %}
+
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

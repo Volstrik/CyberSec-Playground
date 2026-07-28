@@ -449,3 +449,90 @@ a { text-decoration: none; color: inherit; }
   .result-row { flex-direction: column; gap: 0.25rem; }
   .result-val { text-align: left; }
 }
+/* ── Password Tool ──────────────────────────────────────────────────────── */
+.pw-input-wrap {
+  position: relative;
+}
+
+.pw-input-wrap .csp-input {
+  padding-right: 2.5rem;
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.95rem;
+  transition: color var(--transition);
+}
+
+.pw-toggle:hover { color: var(--amber); }
+
+.score-block {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.score-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.score-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.score-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+.score-fill-ok     { background: #10b981; }
+.score-fill-warn   { background: var(--amber); }
+.score-fill-danger { background: #ef4444; }
+
+.score-number {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.suggestion-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.suggestion-row:last-child { border-bottom: none; }
+
+.suggestion-icon {
+  color: var(--amber);
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}

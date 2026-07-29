@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}URL Reputation — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="tool-page-header">
+          <p class="tool-page-eyebrow">Tool 08</p>
+          <h1 class="tool-page-title">URL Reputation</h1>
+          <p class="tool-page-desc">
+            Analyze a URL for suspicious patterns, phishing signals, and risk indicators.
+            VirusTotal integration coming soon.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="csp-panel">
+          <form method="POST">
+            <label class="csp-label" for="url">URL</label>
+            <input
+              class="csp-input"
+              type="text"
+              id="url"
+              name="url"
+              placeholder="e.g. https://example.com/login"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn csp-btn-primary mt-3">
+              Analyze URL <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+
+          {% if result.error %}
+          <div class="csp-panel error-panel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ result.error }}
+          </div>
+
+          {% else %}
+
+          <!-- Verdict banner -->
+          <div class="url-verdict url-verdict-{{ result.color }}">
+            <div class="verdict-left">
+              <div class="verdict-label">Risk Score</div>
+              <div class="verdict-score">{{ result.score }}<span>/100</span></div>
+            </div>
+            <div class="verdict-divider"></div>
+            <div class="verdict-right">
+              <div class="verdict-tag verdict-tag-{{ result.color }}">{{ result.verdict }}</div>
+              <div class="verdict-domain">{{ result.domain }}</div>
+            </div>
+          </div>
+
+          <!-- Quick checks -->
+          <div class="result-panel mb-3">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">Quick Checks</span>
+            </div>
+            <div class="result-body">
+              <div class="result-row">
+                <span class="result-key">https</span>
+                <span class="result-val">
+                  {% if result.uses_https %}
+                    <span class="badge-ok">yes</span>
+                  {% else %}
+                    <span class="badge-danger">no</span>
+                  {% endif %}
+                </span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">known trusted domain</span>
+                <span class="result-val">
+                  {% if result.is_trusted %}
+                    <span class="badge-ok">yes</span>
+                  {% else %}
+                    <span class="badge-warn">unverified</span>
+                  {% endif %}
+                </span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">flags raised</span>
+                <span class="result-val">
+                  {% if result.flags %}
+                    <span class="badge-danger">{{ result.flags | length }}</span>
+                  {% else %}
+                    <span class="badge-ok">0</span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flags -->
+          {% if result.flags %}
+          <div class="result-panel">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">Risk Flags</span>
+            </div>
+            <div class="result-body p-0">
+              {% for flag in result.flags %}
+              <div class="flag-row">
+                <div class="flag-top">
+                  <span class="flag-label flag-{{ flag.level }}">{{ flag.label }}</span>
+                  <span class="badge-{{ flag.level }}">{{ flag.level }}</span>
+                </div>
+                <div class="flag-detail">{{ flag.detail }}</div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% else %}
+          <div class="csp-panel" style="text-align:center; color: var(--text-muted); font-size: 0.85rem;">
+            <i class="bi bi-check-circle-fill me-2" style="color: #10b981;"></i>
+            No suspicious patterns detected in this URL.
+          </div>
+          {% endif %}
+
+          {% endif %}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

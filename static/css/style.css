@@ -874,3 +874,105 @@ textarea.csp-input {
 }
 
 .san-row:last-child { border-bottom: none; }
+/* ── URL Checker ────────────────────────────────────────────────────────── */
+.url-verdict {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.url-verdict-ok     { border-color: rgba(16,185,129,0.25); }
+.url-verdict-warn   { border-color: rgba(245,158,11,0.25); }
+.url-verdict-danger { border-color: rgba(239,68,68,0.25); }
+
+.verdict-left {
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface);
+  text-align: center;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.verdict-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.verdict-score {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.verdict-score span {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.verdict-divider {
+  width: 1px;
+  background: var(--border);
+  align-self: stretch;
+}
+
+.verdict-right {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+}
+
+.verdict-tag {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.verdict-tag-ok     { color: #10b981; }
+.verdict-tag-warn   { color: var(--amber); }
+.verdict-tag-danger { color: #ef4444; }
+
+.verdict-domain {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.flag-row {
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.flag-row:last-child { border-bottom: none; }
+
+.flag-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.flag-label {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.flag-ok     { color: #10b981; }
+.flag-warn   { color: var(--amber); }
+.flag-danger { color: #ef4444; }
+
+.flag-detail {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

@@ -30,34 +30,29 @@ def analyze(url):
         url = "https://" + url
 
     try:
-        parsed   = urllib.parse.urlparse(url)
-        domain   = parsed.netloc.lower()
-        path     = parsed.path.lower()
-        fullurl  = url.lower()
+        parsed  = urllib.parse.urlparse(url)
+        domain  = parsed.netloc.lower()
+        fullurl = url.lower()
 
-        flags  = []
-        score  = 0  # risk score, higher = more suspicious
+        flags = []
+        score = 0  # risk score, higher = more suspicious
 
         # ── Checks ──────────────────────────────────────────────────────
-        # 1. HTTPS
         uses_https = url.startswith("https://")
         if not uses_https:
             flags.append({"label": "No HTTPS", "detail": "Connection is unencrypted.", "level": "danger"})
             score += 20
 
-        # 2. IP address instead of domain
         is_ip = bool(re.match(r"^\d{1,3}(\.\d{1,3}){3}$", domain))
         if is_ip:
             flags.append({"label": "IP Address URL", "detail": "URL uses a raw IP instead of a domain name.", "level": "danger"})
             score += 25
 
-        # 3. Suspicious TLD
         sus_tld = next((t for t in SUSPICIOUS_TLDS if domain.endswith(t)), None)
         if sus_tld:
             flags.append({"label": f"Suspicious TLD ({sus_tld})", "detail": "This TLD is commonly used in phishing.", "level": "warn"})
             score += 15
 
-        # 4. Suspicious keywords in URL
         found_keywords = [kw for kw in SUSPICIOUS_KEYWORDS if kw in fullurl]
         if found_keywords:
             flags.append({
@@ -67,36 +62,29 @@ def analyze(url):
             })
             score += len(found_keywords) * 5
 
-        # 5. Excessive subdomains
         subdomain_count = domain.count(".")
         if subdomain_count > 3:
             flags.append({"label": "Excessive Subdomains", "detail": f"{subdomain_count} dots in domain — common in phishing URLs.", "level": "warn"})
             score += 15
 
-        # 6. URL length
         if len(url) > 100:
             flags.append({"label": "Very Long URL", "detail": f"{len(url)} characters — long URLs are often used to obscure destinations.", "level": "warn"})
             score += 10
 
-        # 7. @ symbol in URL
         if "@" in url:
             flags.append({"label": "@ Symbol in URL", "detail": "The @ symbol can redirect to a different host.", "level": "danger"})
             score += 25
 
-        # 8. Double slash redirect
         if "//" in parsed.path:
             flags.append({"label": "Double Slash in Path", "detail": "May indicate a redirect trick.", "level": "warn"})
             score += 10
 
-        # 9. Hex or percent encoding
         if re.search(r"%[0-9a-fA-F]{2}", url):
             flags.append({"label": "Encoded Characters", "detail": "URL contains encoded characters — sometimes used to disguise malicious links.", "level": "warn"})
             score += 10
 
-        # 10. Trusted domain check
         is_trusted = any(domain == t or domain.endswith("." + t) for t in TRUSTED_DOMAINS)
 
-        # ── Final verdict ────────────────────────────────────────────────
         score = min(score, 100)
 
         if is_trusted and score < 20:
@@ -112,7 +100,6 @@ def analyze(url):
         else:
             verdict, color = "Very High Risk", "danger"
 
-        # ── VirusTotal check ─────────────────────────────────────────────
         vt_result = check_virustotal(url)
 
         return {
@@ -139,7 +126,6 @@ def check_virustotal(url):
     headers = {"x-apikey": config.VT_API_KEY}
 
     try:
-        # Submit URL for analysis
         submit_resp = http_requests.post(
             "https://www.virustotal.com/api/v3/urls",
             headers=headers,
@@ -152,7 +138,6 @@ def check_virustotal(url):
 
         analysis_id = submit_resp.json()["data"]["id"]
 
-        # Poll for result (VT needs a moment to analyze)
         data = None
         for _ in range(6):
             time.sleep(2)
@@ -176,22 +161,38 @@ def check_virustotal(url):
         undetected = stats.get("undetected", 0)
         total      = malicious + suspicious + harmless + undetected
 
-        if malicious > 0:
-            verdict, color = "Flagged Malicious", "danger"
-        elif suspicious > 0:
-            verdict, color = "Flagged Suspicious", "warn"
-        else:
+        flagged = malicious + suspicious
+
+        # Ratio-based threshold instead of "any flag = malicious".
+        # A single vendor out of 90+ is a well-known false-positive
+        # pattern on VirusTotal, not a reliable threat signal alone.
+        if total == 0:
+            verdict, color = "Unknown", "warn"
+        elif flagged == 0:
             verdict, color = "Clean", "ok"
+        elif malicious >= 3 or (total > 0 and flagged / total >= 0.05):
+            verdict, color = "Flagged Malicious", "danger"
+        else:
+            verdict, color = "Low-Confidence Flag", "warn"
+
+        # Which specific vendors flagged it, for transparency
+        vendor_results = data["data"]["attributes"].get("results", {})
+        flagged_vendors = [
+            {"vendor": name, "category": res.get("category")}
+            for name, res in vendor_results.items()
+            if res.get("category") in ("malicious", "suspicious")
+        ]
 
         return {
-            "available":  True,
-            "malicious":  malicious,
-            "suspicious": suspicious,
-            "harmless":   harmless,
-            "undetected": undetected,
-            "total":      total,
-            "verdict":    verdict,
-            "color":      color,
+            "available":       True,
+            "malicious":       malicious,
+            "suspicious":      suspicious,
+            "harmless":        harmless,
+            "undetected":      undetected,
+            "total":           total,
+            "verdict":         verdict,
+            "color":           color,
+            "flagged_vendors": flagged_vendors,
         }
 
     except Exception as e:

@@ -99,7 +99,14 @@
                 Scanned by {{ result.vt.total }} security vendors
               </div>
             </div>
-
+{% if result.vt.flagged_vendors %}
+<div class="vt-vendor-list">
+  <span class="vt-vendor-heading">Flagged by:</span>
+  {% for v in result.vt.flagged_vendors %}
+    <span class="vt-vendor-chip">{{ v.vendor }}</span>
+  {% endfor %}
+</div>
+{% endif %}
             {% else %}
             <div class="result-body">
               <div class="vt-unavailable">

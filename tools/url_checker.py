@@ -1,5 +1,8 @@
 import re
+import time
 import urllib.parse
+import requests as http_requests
+import config
 
 SUSPICIOUS_KEYWORDS = [
     "login", "signin", "verify", "secure", "account", "update",
@@ -17,6 +20,7 @@ TRUSTED_DOMAINS = [
     "amazon.com", "facebook.com", "twitter.com", "linkedin.com",
     "wikipedia.org", "youtube.com",
 ]
+
 
 def analyze(url):
     if not url:
@@ -108,6 +112,9 @@ def analyze(url):
         else:
             verdict, color = "Very High Risk", "danger"
 
+        # ── VirusTotal check ─────────────────────────────────────────────
+        vt_result = check_virustotal(url)
+
         return {
             "url":        url,
             "domain":     domain,
@@ -117,8 +124,75 @@ def analyze(url):
             "score":      score,
             "verdict":    verdict,
             "color":      color,
+            "vt":         vt_result,
             "error":      None,
         }
 
     except Exception as e:
         return {"error": str(e)}
+
+
+def check_virustotal(url):
+    if not config.VT_API_KEY:
+        return {"available": False, "reason": "No API key configured."}
+
+    headers = {"x-apikey": config.VT_API_KEY}
+
+    try:
+        # Submit URL for analysis
+        submit_resp = http_requests.post(
+            "https://www.virustotal.com/api/v3/urls",
+            headers=headers,
+            data={"url": url},
+            timeout=10,
+        )
+
+        if submit_resp.status_code != 200:
+            return {"available": False, "reason": f"VirusTotal error: {submit_resp.status_code}"}
+
+        analysis_id = submit_resp.json()["data"]["id"]
+
+        # Poll for result (VT needs a moment to analyze)
+        data = None
+        for _ in range(6):
+            time.sleep(2)
+            result_resp = http_requests.get(
+                f"https://www.virustotal.com/api/v3/analyses/{analysis_id}",
+                headers=headers,
+                timeout=10,
+            )
+            data = result_resp.json()
+            status = data["data"]["attributes"]["status"]
+            if status == "completed":
+                break
+
+        if data is None:
+            return {"available": False, "reason": "No response from VirusTotal."}
+
+        stats = data["data"]["attributes"]["stats"]
+        malicious  = stats.get("malicious", 0)
+        suspicious = stats.get("suspicious", 0)
+        harmless   = stats.get("harmless", 0)
+        undetected = stats.get("undetected", 0)
+        total      = malicious + suspicious + harmless + undetected
+
+        if malicious > 0:
+            verdict, color = "Flagged Malicious", "danger"
+        elif suspicious > 0:
+            verdict, color = "Flagged Suspicious", "warn"
+        else:
+            verdict, color = "Clean", "ok"
+
+        return {
+            "available":  True,
+            "malicious":  malicious,
+            "suspicious": suspicious,
+            "harmless":   harmless,
+            "undetected": undetected,
+            "total":      total,
+            "verdict":    verdict,
+            "color":      color,
+        }
+
+    except Exception as e:
+        return {"available": False, "reason": str(e)}

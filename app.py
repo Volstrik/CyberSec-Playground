@@ -1,13 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-from tools import (
-    password_checker,
-    dns_lookup,
-    whois_lookup,
-    port_scanner,
-    hash_generator,
-    ssl_checker,
-    security_headers,
-)
+@app.route("/url", methods=["GET", "POST"])
+def url_checker_route():
+    result = None
+    if request.method == "POST":
+        url = request.form.get("url", "")
+        result = url_checker.analyze(url)
+    return render_template("url.html", result=result)
 
 app = Flask(__name__)
 

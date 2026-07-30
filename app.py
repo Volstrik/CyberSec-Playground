@@ -11,7 +11,17 @@ from tools import (
 )
 
 app = Flask(__name__)
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
+app = Flask(__name__)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["60 per hour"],
+    storage_uri="memory://",
+)
 
 # ── Home ──────────────────────────────────────────────────────────────────────
 @app.route("/")
@@ -31,6 +41,7 @@ def password():
 
 # ── URL Reputation Checker ────────────────────────────────────────────────────
 @app.route("/url", methods=["GET", "POST"])
+@limiter.limit("4 per minute")
 def url_checker_route():
     result = None
     if request.method == "POST":
@@ -61,13 +72,13 @@ def dns():
 
 # ── Port Scanner ──────────────────────────────────────────────────────────────
 @app.route("/scanner", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def scanner():
     result = None
     if request.method == "POST":
         host = request.form.get("host", "")
         result = port_scanner.scan(host)
     return render_template("scanner.html", result=result)
-
 
 # ── Hash Generator ────────────────────────────────────────────────────────────
 @app.route("/hash", methods=["GET", "POST"])
@@ -98,6 +109,8 @@ def headers():
         result = security_headers.check(url)
     return render_template("headers.html", result=result)
 
-
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template("rate_limit.html"), 429
 if __name__ == "__main__":
     app.run(debug=True)

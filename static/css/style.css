@@ -1060,3 +1060,15 @@ textarea.csp-input {
   margin: 0.15rem;
   font-family: var(--font-mono);
 }
+/* ── Ethics Notice ──────────────────────────────────────────────────────── */
+.ethics-notice {
+  display: flex;
+  align-items: center;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--amber);
+  font-size: 0.8rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+}

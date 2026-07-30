@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Slow down — CyberSec Playground{% endblock %}
+
+{% block content %}
+<section class="tool-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <div class="csp-panel">
+          <i class="bi bi-hourglass-split" style="font-size: 2rem; color: var(--amber);"></i>
+          <h1 class="tool-page-title mt-3">Too many requests</h1>
+          <p class="tool-page-desc">
+            You've hit the rate limit for this tool. Wait a minute and try again — this protects the service for everyone.
+          </p>
+          <a href="/" class="btn csp-btn-primary mt-2">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

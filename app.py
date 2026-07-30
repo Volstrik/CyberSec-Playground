@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, jsonify
-@app.route("/url", methods=["GET", "POST"])
-def url_checker_route():
-    result = None
-    if request.method == "POST":
-        url = request.form.get("url", "")
-        result = url_checker.analyze(url)
-    return render_template("url.html", result=result)
+from tools import (
+    password_checker,
+    dns_lookup,
+    whois_lookup,
+    port_scanner,
+    hash_generator,
+    ssl_checker,
+    security_headers,
+    url_checker,
+)
 
 app = Flask(__name__)
 
@@ -28,12 +31,11 @@ def password():
 
 # ── URL Reputation Checker ────────────────────────────────────────────────────
 @app.route("/url", methods=["GET", "POST"])
-def url_checker():
+def url_checker_route():
     result = None
     if request.method == "POST":
         url = request.form.get("url", "")
-        # TODO: implement url_reputation tool
-        result = {"url": url, "status": "coming soon"}
+        result = url_checker.analyze(url)
     return render_template("url.html", result=result)
 
 

@@ -976,3 +976,68 @@ textarea.csp-input {
   color: var(--text-secondary);
   line-height: 1.5;
 }
+/* ── VirusTotal Panel ───────────────────────────────────────────────────── */
+.vt-summary {
+  padding: 1.25rem;
+}
+
+.vt-tag {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.vt-tag-ok     { color: #10b981; }
+.vt-tag-warn   { color: var(--amber); }
+.vt-tag-danger { color: #ef4444; }
+
+.vt-stats {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.vt-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 0.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.vt-stat:last-child { border-right: none; }
+
+.vt-stat-num {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.vt-num-danger { color: #ef4444; }
+.vt-num-warn   { color: var(--amber); }
+.vt-num-ok     { color: #10b981; }
+
+.vt-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.vt-total {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.vt-unavailable {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+}

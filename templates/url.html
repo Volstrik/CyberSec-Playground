@@ -9,11 +9,10 @@
 
         <!-- Header -->
         <div class="tool-page-header">
-      
+          <p class="tool-page-eyebrow">Tool 08</p>
           <h1 class="tool-page-title">URL Reputation</h1>
           <p class="tool-page-desc">
-            Analyze a URL for suspicious patterns, phishing signals, and risk indicators.
-            VirusTotal integration coming soon.
+            Analyze a URL for suspicious patterns, phishing signals, and live VirusTotal scan results.
           </p>
         </div>
 
@@ -30,7 +29,11 @@
               autocomplete="off"
               required
             />
-            <button type="submit" class="btn csp-btn-primary mt-3">
+            <p class="input-hint">
+              <i class="bi bi-clock-history me-1"></i>
+              VirusTotal scans take 10–15 seconds to complete.
+            </p>
+            <button type="submit" class="btn csp-btn-primary mt-2" id="url-btn">
               Analyze URL <i class="bi bi-arrow-right ms-2"></i>
             </button>
           </form>
@@ -47,7 +50,7 @@
 
           {% else %}
 
-          <!-- Verdict banner -->
+          <!-- Verdict banner (pattern analysis) -->
           <div class="url-verdict url-verdict-{{ result.color }}">
             <div class="verdict-left">
               <div class="verdict-label">Risk Score</div>
@@ -58,6 +61,53 @@
               <div class="verdict-tag verdict-tag-{{ result.color }}">{{ result.verdict }}</div>
               <div class="verdict-domain">{{ result.domain }}</div>
             </div>
+          </div>
+
+          <!-- VirusTotal panel -->
+          <div class="result-panel mb-3">
+            <div class="result-header">
+              <div class="result-header-dot"></div>
+              <span class="result-header-label">VirusTotal Scan</span>
+            </div>
+
+            {% if result.vt.available %}
+            <div class="vt-summary">
+              <div class="vt-tag vt-tag-{{ result.vt.color }}">
+                <i class="bi bi-shield-fill-check me-1"></i>{{ result.vt.verdict }}
+              </div>
+
+              <div class="vt-stats">
+                <div class="vt-stat">
+                  <span class="vt-stat-num vt-num-danger">{{ result.vt.malicious }}</span>
+                  <span class="vt-stat-label">malicious</span>
+                </div>
+                <div class="vt-stat">
+                  <span class="vt-stat-num vt-num-warn">{{ result.vt.suspicious }}</span>
+                  <span class="vt-stat-label">suspicious</span>
+                </div>
+                <div class="vt-stat">
+                  <span class="vt-stat-num vt-num-ok">{{ result.vt.harmless }}</span>
+                  <span class="vt-stat-label">harmless</span>
+                </div>
+                <div class="vt-stat">
+                  <span class="vt-stat-num">{{ result.vt.undetected }}</span>
+                  <span class="vt-stat-label">undetected</span>
+                </div>
+              </div>
+
+              <div class="vt-total">
+                Scanned by {{ result.vt.total }} security vendors
+              </div>
+            </div>
+
+            {% else %}
+            <div class="result-body">
+              <div class="vt-unavailable">
+                <i class="bi bi-info-circle me-2"></i>
+                VirusTotal scan unavailable — {{ result.vt.reason }}
+              </div>
+            </div>
+            {% endif %}
           </div>
 
           <!-- Quick checks -->
@@ -134,4 +184,14 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('form').addEventListener('submit', function () {
+    const btn = document.getElementById('url-btn');
+    btn.innerHTML = 'Scanning… <span class="spinner-border spinner-border-sm ms-2"></span>';
+    btn.disabled = true;
+  });
+</script>
 {% endblock %}

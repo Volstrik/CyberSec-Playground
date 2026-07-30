@@ -15,7 +15,9 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
+import config
 
+app.config["SECRET_KEY"] = config.SECRET_KEY
 limiter = Limiter(
     get_remote_address,
     app=app,

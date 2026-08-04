@@ -1072,3 +1072,7 @@ textarea.csp-input {
   border-radius: var(--radius-sm);
   margin-top: 1rem;
 }
+.footer-divider {
+  color: var(--text-muted);
+  margin: 0 0.4rem;
+}

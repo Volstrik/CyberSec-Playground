@@ -16,8 +16,9 @@ from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 import config
-
+from flask_wtf.csrf import CSRFProtect
 app.config["SECRET_KEY"] = config.SECRET_KEY
+csrf = CSRFProtect(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -114,5 +115,8 @@ def headers():
 @app.errorhandler(429)
 def ratelimit_handler(e):
     return render_template("rate_limit.html"), 429
+@app.errorhandler(400)
+def csrf_error(e):
+    return render_template("rate_limit.html"), 400
 if __name__ == "__main__":
     app.run(debug=True)

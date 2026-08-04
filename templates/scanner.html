@@ -24,6 +24,7 @@
         <div class="csp-panel">
           <form method="POST">
             <label class="csp-label" for="host">Host / IP Address</label>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input
               class="csp-input"
               type="text"

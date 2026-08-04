@@ -20,6 +20,7 @@
         <div class="csp-panel">
           <form method="POST">
             <label class="csp-label" for="text">Input Text</label>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <textarea
               class="csp-input"
               id="text"

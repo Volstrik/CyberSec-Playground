@@ -18,6 +18,11 @@ app = Flask(__name__)
 import config
 from flask_wtf.csrf import CSRFProtect
 app.config["SECRET_KEY"] = config.SECRET_KEY
+# Explicit session cookie hardening — Flask's defaults are decent, but
+# stating these outright removes any ambiguity about intent.
+app.config["SESSION_COOKIE_SECURE"] = True      # cookie only sent over HTTPS
+app.config["SESSION_COOKIE_HTTPONLY"] = True     # blocks JS access to the cookie (XSS mitigation)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"    # blocks cross-site cookie leakage while still allowing normal top-level navigation
 csrf = CSRFProtect(app)
 # Render sits behind one reverse proxy hop — trust exactly one layer of
 # X-Forwarded-For so Flask-Limiter sees the real visitor IP, not the proxy's.

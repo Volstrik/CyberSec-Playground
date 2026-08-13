@@ -18,7 +18,7 @@
 
         <!-- Form -->
         <div class="csp-panel">
-          <form method="POST">
+          <form method="POST" data-loading-text="Checking headers...">
             <label class="csp-label" for="url">Website URL</label>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input

@@ -9,7 +9,7 @@ from tools import (
     security_headers,
     url_checker,
 )
-
+from tools.validators import check_length
 app = Flask(__name__)
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -22,6 +22,9 @@ csrf = CSRFProtect(app)
 # Render sits behind one reverse proxy hop — trust exactly one layer of
 # X-Forwarded-For so Flask-Limiter sees the real visitor IP, not the proxy's.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+# Reject any request body over 16KB outright — every form on this site
+# only needs a few hundred bytes at most.
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 @app.after_request
 def set_security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -53,85 +56,77 @@ limiter = Limiter(
 def index():
     return render_template("index.html")
 
-
-# ── Password Strength Analyzer ────────────────────────────────────────────────
 @app.route("/password", methods=["GET", "POST"])
 def password():
     result = None
     if request.method == "POST":
         pwd = request.form.get("password", "")
-        result = password_checker.analyze(pwd)
+        result = check_length("password", pwd) or password_checker.analyze(pwd)
     return render_template("password.html", result=result)
 
 
-# ── URL Reputation Checker ────────────────────────────────────────────────────
 @app.route("/url", methods=["GET", "POST"])
 @limiter.limit("4 per minute")
 def url_checker_route():
     result = None
     if request.method == "POST":
         url = request.form.get("url", "")
-        result = url_checker.analyze(url)
+        result = check_length("url", url) or url_checker.analyze(url)
     return render_template("url.html", result=result)
 
 
-# ── WHOIS Lookup ──────────────────────────────────────────────────────────────
 @app.route("/whois", methods=["GET", "POST"])
 def whois():
     result = None
     if request.method == "POST":
         domain = request.form.get("domain", "")
-        result = whois_lookup.lookup(domain)
+        result = check_length("domain", domain) or whois_lookup.lookup(domain)
     return render_template("whois.html", result=result)
 
 
-# ── DNS Lookup ────────────────────────────────────────────────────────────────
 @app.route("/dns", methods=["GET", "POST"])
 def dns():
     result = None
     if request.method == "POST":
         domain = request.form.get("domain", "")
-        result = dns_lookup.lookup(domain)
+        result = check_length("domain", domain) or dns_lookup.lookup(domain)
     return render_template("dns.html", result=result)
 
 
-# ── Port Scanner ──────────────────────────────────────────────────────────────
 @app.route("/scanner", methods=["GET", "POST"])
 @limiter.limit("5 per minute")
 def scanner():
     result = None
     if request.method == "POST":
         host = request.form.get("host", "")
-        result = port_scanner.scan(host)
+        result = check_length("host", host) or port_scanner.scan(host)
     return render_template("scanner.html", result=result)
 
-# ── Hash Generator ────────────────────────────────────────────────────────────
+
 @app.route("/hash", methods=["GET", "POST"])
 def hash_gen():
     result = None
     if request.method == "POST":
         text = request.form.get("text", "")
-        result = hash_generator.generate(text)
+        result = check_length("text", text) or hash_generator.generate(text)
     return render_template("hash.html", result=result)
 
 
-# ── SSL Certificate Checker ───────────────────────────────────────────────────
 @app.route("/ssl", methods=["GET", "POST"])
 def ssl():
     result = None
     if request.method == "POST":
         domain = request.form.get("domain", "")
-        result = ssl_checker.check(domain)
+        result = check_length("domain", domain) or ssl_checker.check(domain)
     return render_template("ssl.html", result=result)
 
 
-# ── Security Headers Checker ──────────────────────────────────────────────────
 @app.route("/headers", methods=["GET", "POST"])
 def headers():
     result = None
     if request.method == "POST":
         url = request.form.get("url", "")
-        result = security_headers.check(url)
+        result = check_length("url", url) or security_headers.check(url)
     return render_template("headers.html", result=result)
 
 @app.errorhandler(429)
@@ -140,5 +135,8 @@ def ratelimit_handler(e):
 @app.errorhandler(400)
 def csrf_error(e):
     return render_template("rate_limit.html"), 400
+@app.errorhandler(413)
+def request_too_large(e):
+    return render_template("rate_limit.html"), 413
 if __name__ == "__main__":
     app.run(debug=True)

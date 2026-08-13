@@ -13,12 +13,15 @@ from tools import (
 app = Flask(__name__)
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
+from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 import config
 from flask_wtf.csrf import CSRFProtect
 app.config["SECRET_KEY"] = config.SECRET_KEY
 csrf = CSRFProtect(app)
+# Render sits behind one reverse proxy hop — trust exactly one layer of
+# X-Forwarded-For so Flask-Limiter sees the real visitor IP, not the proxy's.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 @app.after_request
 def set_security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"

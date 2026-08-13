@@ -1,4 +1,5 @@
 import requests
+from tools.network_safety import is_url_safe
 
 HEADERS_INFO = {
     "Strict-Transport-Security": {
@@ -27,6 +28,9 @@ HEADERS_INFO = {
     },
 }
 
+MAX_REDIRECTS = 5
+
+
 def check(url):
     if not url:
         return None
@@ -34,8 +38,36 @@ def check(url):
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
 
+    # Validate the initial URL before making any request
+    safe, reason = is_url_safe(url)
+    if not safe:
+        return {"error": f"Request blocked: {reason}"}
+
     try:
-        response = requests.get(url, timeout=8, allow_redirects=True)
+        current_url = url
+        response = None
+
+        # Manually follow redirects, validating each hop before following it.
+        # This prevents an attacker using a safe public URL that 302s to an
+        # internal address, which `requests`' default redirect handling
+        # would otherwise follow blindly.
+        for _ in range(MAX_REDIRECTS):
+            response = requests.get(current_url, timeout=8, allow_redirects=False)
+
+            if response.is_redirect or response.is_permanent_redirect:
+                next_url = response.headers.get("Location")
+                if not next_url:
+                    break
+
+                safe, reason = is_url_safe(next_url)
+                if not safe:
+                    return {"error": f"Redirect blocked: {reason}"}
+
+                current_url = next_url
+                continue
+
+            break
+
         response_headers = {k.lower(): v for k, v in response.headers.items()}
 
         results = []
@@ -67,7 +99,7 @@ def check(url):
             grade, color = "F", "danger"
 
         return {
-            "url":           url,
+            "url":           current_url,
             "status_code":   response.status_code,
             "results":       results,
             "present_count": present_count,

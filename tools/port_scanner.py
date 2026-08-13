@@ -1,6 +1,6 @@
 import socket
-import ipaddress
 from concurrent.futures import ThreadPoolExecutor
+from tools.network_safety import resolve_and_check
 
 COMMON_PORTS = {
     21:   "FTP",
@@ -23,21 +23,6 @@ COMMON_PORTS = {
 }
 
 
-def is_private_or_reserved(ip_str):
-    """Block scans targeting internal/private infrastructure."""
-    try:
-        ip = ipaddress.ip_address(ip_str)
-        return (
-            ip.is_private
-            or ip.is_loopback
-            or ip.is_link_local
-            or ip.is_reserved
-            or ip.is_multicast
-        )
-    except ValueError:
-        return False
-
-
 def scan_port(host, port, timeout=1.0):
     try:
         with socket.create_connection((host, port), timeout=timeout):
@@ -52,18 +37,9 @@ def scan(host):
 
     host = host.replace("https://", "").replace("http://", "").strip("/")
 
-    # Block obviously internal hostnames outright
-    blocked_hostnames = {"localhost", "0.0.0.0", "::1"}
-    if host.lower() in blocked_hostnames:
-        return {"error": "Scanning localhost or internal addresses is not allowed."}
-
-    try:
-        resolved_ip = socket.gethostbyname(host)
-    except socket.gaierror:
-        return {"error": f"Could not resolve host: '{host}'"}
-
-    if is_private_or_reserved(resolved_ip):
-        return {"error": "This host resolves to a private or internal IP address. Scanning internal infrastructure is not allowed."}
+    safe, resolved_ip, reason = resolve_and_check(host)
+    if not safe:
+        return {"error": reason}
 
     open_ports   = []
     closed_ports = []

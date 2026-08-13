@@ -49,7 +49,7 @@
             <div class="hash-row">
               <div class="hash-algo">MD5</div>
               <div class="hash-value" id="val-md5">{{ result.md5 }}</div>
-              <button class="hash-copy" onclick="copyHash('val-md5', this)" title="Copy">
+              <button class="hash-copy" data-target="val-md5" title="copy">
                 <i class="bi bi-clipboard"></i>
               </button>
             </div>
@@ -89,18 +89,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-  function copyHash(id, btn) {
-    const text = document.getElementById(id).textContent.trim();
-    navigator.clipboard.writeText(text).then(() => {
-      const icon = btn.querySelector('i');
-      icon.className = 'bi bi-clipboard-check';
-      btn.style.color = 'var(--amber)';
-      setTimeout(() => {
-        icon.className = 'bi bi-clipboard';
-        btn.style.color = '';
-      }, 1500);
-    });
-  }
-</script>
+<script src="{{ url_for('static', filename='js/hash.js') }}"></script>
 {% endblock %}

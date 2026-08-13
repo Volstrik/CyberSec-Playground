@@ -19,6 +19,25 @@ import config
 from flask_wtf.csrf import CSRFProtect
 app.config["SECRET_KEY"] = config.SECRET_KEY
 csrf = CSRFProtect(app)
+@app.after_request
+def set_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
+
+    # CSP: allows the CDNs you already rely on (Bootstrap, Bootstrap Icons,
+    # Google Fonts) while blocking everything else by default.
+    response.headers["Content-Security-Policy"] = (
+    "default-src 'self'; "
+    "script-src 'self' https://cdn.jsdelivr.net; "
+    "style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; "
+    "font-src 'self' https://fonts.gstatic.com; "
+    "img-src 'self' data:; "
+    "connect-src 'self';")
+
+    return response
 limiter = Limiter(
     get_remote_address,
     app=app,

@@ -18,7 +18,7 @@
 
         <!-- Form -->
         <div class="csp-panel">
-          <form method="POST">
+          <form method="POST" data-loading-text="Analyzing URL...">
             <label class="csp-label" for="url">URL</label>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input
@@ -195,11 +195,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-  document.querySelector('form').addEventListener('submit', function () {
-    const btn = document.getElementById('url-btn');
-    btn.innerHTML = 'Scanning… <span class="spinner-border spinner-border-sm ms-2"></span>';
-    btn.disabled = true;
-  });
-</script>
+<script src="{{ url_for('static', filename='js/scan-loading.js') }}"></script>
 {% endblock %}
